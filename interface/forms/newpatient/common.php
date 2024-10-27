@@ -293,6 +293,56 @@ $ires = sqlStatement("SELECT id, type, title, begdate FROM lists WHERE " .
                 text-align: <?php echo ($_SESSION['language_direction'] == 'rtl') ? 'right ' : 'left '?> !important;
             }
         }
+        .textarea-like {
+            white-space: pre-wrap;
+            overflow: auto;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+        #textblock-options {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 5px;
+            z-index: 1000;
+        }
+        .textblock-option {
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+        .textblock-option:hover {
+            background-color: #f0f0f0;
+        }
+        .textblock-placeholder {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .textarea-like {
+            white-space: pre-wrap;
+            overflow: auto;
+            min-height: 100px;
+        }
+        .textblock-placeholder {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        #textblock-options {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            z-index: 1000;
+        }
+        .textblock-option {
+            padding: 5px;
+            cursor: pointer;
+        }
+        .textblock-option:hover {
+            background-color: #f0f0f0;
+        }
     </style>
     <?php
     if ($viewmode) {
@@ -684,9 +734,15 @@ $ires = sqlStatement("SELECT id, type, title, begdate FROM lists WHERE " .
                     <fieldset>
                         <legend><?php echo xlt('Reason for Visit') ?></legend>
                         <div class="form-row mx-3 h-100">
-                            <textarea name="reason" id="reason" class="form-control" cols="80" rows="4"><?php echo $viewmode ? text($result['reason']) : text($GLOBALS['default_chief_complaint']); ?></textarea>
+                            <div id="reason" class="form-control textarea-like" contenteditable="true"><?php echo xlt('Click here to enter reason for visit. You can add placeholders like '); ?><span class="textblock-placeholder">[<?php echo xlt('Placeholder'); ?>]</span></div>
+                            <input type="hidden" name="reason" id="reason-hidden" value="<?php echo $viewmode ? attr($result['reason']) : ''; ?>">
                         </div>
                     </fieldset>
+                </div>
+                <div id="textblock-options" class="d-none">
+                    <div class="textblock-option" data-text="Galil">Galil</div>
+                    <div class="textblock-option" data-text="Abner">Abner</div>
+                    <div class="textblock-option" data-text="Awara">Awara</div>
                 </div>
                 <div class="col-sm <?php displayOption('enc_enable_issues');?>">
                     <?php
@@ -841,6 +897,43 @@ $ires = sqlStatement("SELECT id, type, title, begdate FROM lists WHERE " .
     $(function () {
         $('#sensitivity-tooltip').attr({"title": <?php echo xlj('If set as high will restrict visibility of encounter to users belonging to certain groups (AROs). By default - Physicians and Administrators'); ?>, "data-toggle": "tooltip", "data-placement": "bottom"}).tooltip();
         $('#onset-tooltip').attr({"title": <?php echo xlj('Hospital date needed for successful billing of hospital encounters'); ?>, "data-toggle": "tooltip", "data-placement": "bottom"}).tooltip();
+    });
+
+    $(function() {
+        const reason = $('#reason');
+        const textblockOptions = $('#textblock-options');
+        const reasonHidden = $('#reason-hidden');
+
+        reason.on('click', '.textblock-placeholder', function(e) {
+            const rect = this.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            textblockOptions.css({
+                top: (rect.bottom + scrollTop) + 'px',
+                left: rect.left + 'px'
+            }).removeClass('d-none');
+            e.stopPropagation();
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.textblock-placeholder, #textblock-options').length) {
+                textblockOptions.addClass('d-none');
+            }
+        });
+
+        $('.textblock-option').on('click', function() {
+            const text = $(this).data('text');
+            const placeholder = reason.find('.textblock-placeholder');
+            placeholder.text('[' + text + ']');
+            textblockOptions.addClass('d-none');
+            updateHiddenInput();
+        });
+
+        function updateHiddenInput() {
+            reasonHidden.val(reason.html());
+        }
+
+        // Update hidden input on form submission
+        $('form').on('submit', updateHiddenInput);
     });
 
 </script>

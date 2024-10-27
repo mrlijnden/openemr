@@ -1,0 +1,43 @@
+<div class="form-row">
+    <div class="col-sm">
+        <fieldset>
+            <legend><?php echo xlt('Reason for Visit') ?></legend>
+            <div class="form-row mx-3 h-100">
+                <textarea name="reason" id="reason" class="form-control" cols="80" rows="4">
+                    who is the best <span id="nameSpan">NAME</span>
+                </textarea>
+            </div>
+        </fieldset>
+    </div>
+</div>
+
+<!-- JavaScript for Hover Effect and Option Selection -->
+<script>
+    // Create a dropdown list to appear on hover
+    const options = ["Gallil", "Awara", "Abner"];
+    const nameSpan = document.getElementById('nameSpan');
+    
+    // Function to create the dropdown when hovering
+    nameSpan.addEventListener('mouseover', function () {
+        const dropdown = document.createElement('select');
+        options.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option;
+            opt.textContent = option;
+            dropdown.appendChild(opt);
+        });
+        dropdown.addEventListener('change', function () {
+            nameSpan.textContent = this.value;  // Replace NAME with the selected value
+        });
+
+        // Replace the text NAME with the dropdown
+        nameSpan.textContent = '';
+        nameSpan.appendChild(dropdown);
+    });
+
+    // Remove the dropdown when not hovering
+    nameSpan.addEventListener('mouseleave', function () {
+        const selectedValue = nameSpan.querySelector('select')?.value || 'NAME';
+        nameSpan.textContent = selectedValue;  // Keep the selected value or default to NAME
+    });
+</script>
