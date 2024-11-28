@@ -35,25 +35,56 @@ $check_res = $formid ? formFetch("form_clinical_instructions", $formid) : array(
             <div class="row">
                 <div class="col-12">
                     <h2><?php echo xlt('Clinical Instructions'); ?></h2>
-                    <form method="post" name="my_form" action="<?php echo $rootdir; ?>/forms/clinical_instructions/save.php?id=<?php echo attr_url($formid); ?>">
-                        <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
-                        <fieldset>
-                            <legend><?php echo xlt('Instructions'); ?></legend>
-                            <div class="container">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form method="post" name="my_form" action="<?php echo $rootdir; ?>/forms/clinical_instructions/save.php?id=<?php echo attr_url($formid); ?>">
+                                <input type="hidden" name="csrf_token_form" value="<?php echo attr(CsrfUtils::collectCsrfToken()); ?>" />
+                                <fieldset>
+                                    <legend><?php echo xlt('Instructions'); ?></legend>
+                                    <div class="container">
+                                        <div class="form-group">
+                                            <textarea name="instruction" id="instruction" class="form-control" cols="80" rows="5" ><?php echo text($check_res['instruction'] ?? ''); ?></textarea>
+                                        </div>
+                                    </div>
+                                </fieldset>
                                 <div class="form-group">
-                                    <textarea name="instruction" id="instruction" class="form-control" cols="80" rows="5" ><?php echo text($check_res['instruction'] ?? ''); ?></textarea>
+                                    <div class="btn-group" role="group">
+                                        <button type="submit" onclick='top.restoreSession()' class="btn btn-primary btn-save"><?php echo xlt('Save'); ?></button>
+                                        <button type="button" class="btn btn-secondary btn-cancel" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
+                                    </div>
                                 </div>
-                            </div>
-                        </fieldset>
-                        <div class="form-group">
-                            <div class="btn-group" role="group">
-                                <button type="submit" onclick='top.restoreSession()' class="btn btn-primary btn-save"><?php echo xlt('Save'); ?></button>
-                                <button type="button" class="btn btn-secondary btn-cancel" onclick="top.restoreSession(); parent.closeTab(window.name, false);"><?php echo xlt('Cancel');?></button>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="templateSelect"><?php echo xlt('Quick Templates'); ?></label>
+                                <select class="form-control" id="templateSelect" onchange="insertTemplate()">
+                                    <option value=""><?php echo xlt('Select Template'); ?></option>
+                                    <option value="Take medication as prescribed."><?php echo xlt('Medication Instructions'); ?></option>
+                                    <option value="Return to clinic in 2 weeks for follow-up."><?php echo xlt('Follow-up Instructions'); ?></option>
+                                    <option value="If symptoms worsen, please contact the office immediately."><?php echo xlt('Warning Instructions'); ?></option>
+                                </select>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <script>
+            function insertTemplate() {
+                const select = document.getElementById('templateSelect');
+                const textarea = document.getElementById('instruction');
+                
+                if (select.value) {
+                    // Add new line if textarea is not empty
+                    if (textarea.value && !textarea.value.endsWith('\n')) {
+                        textarea.value += '\n';
+                    }
+                    textarea.value += select.value + '\n';
+                    select.value = ''; // Reset select to default option
+                }
+            }
+        </script>
     </body>
 </html>

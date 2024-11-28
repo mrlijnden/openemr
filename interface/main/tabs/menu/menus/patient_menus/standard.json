@@ -73,6 +73,16 @@
         "requirement": 0
     },
     {
+        "label": "Beantwoording",
+        "menu_id": "Beantwoording",
+        "target": "main",
+        "on_click":"top.restoreSession()",
+        "url": "interface/patient_file/report/custom_report.php?printable=1&include_demographics=demographics&include_history=history&include_insurance=insurance&include_billing=billing&include_immunizations=immunizations&include_notes=notes&include_transactions=transactions&include_batchcom=batchcom&include_recurring_days=recurring_days&pdf=0&newpatient_2=3&",
+        "pid":"false",
+        "children": [],
+        "requirement": 0
+    },
+    {
         "label": "External Data",
         "menu_id": "external_data",
         "target": "main",
